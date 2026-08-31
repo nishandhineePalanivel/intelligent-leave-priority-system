@@ -71,9 +71,13 @@ export default function RequestCard({ request, onInspect, activeRole }) {
       <div className="flex items-start justify-between gap-4 flex-wrap pb-4 border-b border-slate-800/80">
         <div className="flex items-center gap-3">
           <img 
-            src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'} 
+            src={avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Student'} 
             alt={studentName}
-            className="w-12 h-12 rounded-xl object-cover ring-2 ring-indigo-500/30 group-hover:ring-indigo-400 transition"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(studentName)}`;
+            }}
+            className="w-12 h-12 rounded-xl object-cover ring-2 ring-indigo-500/30 group-hover:ring-indigo-400 transition bg-slate-800"
           />
           <div>
             <div className="flex items-center gap-2">
