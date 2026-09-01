@@ -57,6 +57,9 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       const res = await login(identity, password, role);
+      if (!res || !res.user) {
+        throw new Error('Authentication failed. Invalid user record.');
+      }
       const userRole = res.user.role;
 
       if (userRole === 'STUDENT') navigate('/student/dashboard');
