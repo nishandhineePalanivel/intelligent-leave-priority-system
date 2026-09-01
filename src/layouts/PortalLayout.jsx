@@ -25,8 +25,7 @@ import {
   FileSpreadsheet, 
   Building2, 
   UserCheck, 
-  Sliders,
-  Award
+  Sliders
 } from 'lucide-react';
 import FairnessPolicyModal from '../components/FairnessPolicyModal';
 
@@ -94,26 +93,26 @@ export default function PortalLayout() {
   const navItems = getNavItems();
 
   const getRoleBadgeStyle = () => {
-    if (role === 'STUDENT') return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
-    if (role === 'STAFF') return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-    if (role === 'VICE_PRINCIPAL') return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-    return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+    if (role === 'STUDENT') return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (role === 'STAFF') return 'bg-purple-100 text-purple-800 border-purple-200';
+    if (role === 'VICE_PRINCIPAL') return 'bg-amber-100 text-amber-800 border-amber-200';
+    return 'bg-rose-100 text-rose-800 border-rose-200';
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col lg:flex-row selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col lg:flex-row selection:bg-blue-600 selection:text-white">
       
       {/* Mobile Top Header */}
-      <div className="lg:hidden bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-40">
+      <div className="lg:hidden bg-blue-900 border-b border-blue-800 p-4 flex items-center justify-between sticky top-0 z-40 text-white">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
-          <span className="font-extrabold text-sm tracking-tight text-white">LEAVE PRIORITY ERP</span>
+          <span className="font-extrabold text-sm tracking-tight">LEAVE PRIORITY ERP</span>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+          className="p-2 rounded-lg bg-blue-800 text-white hover:bg-blue-700"
         >
           {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -123,19 +122,19 @@ export default function PortalLayout() {
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm"
         />
       )}
 
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300
+        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300 text-white
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div>
           {/* Sidebar Header Branding */}
           <div className="p-5 border-b border-slate-800 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-cyan-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 ring-1 ring-white/20 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 ring-2 ring-white/20 shrink-0">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -153,11 +152,11 @@ export default function PortalLayout() {
             <img
               src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'}
               alt={user?.name}
-              className="w-10 h-10 rounded-xl object-cover ring-2 ring-indigo-500/30"
+              className="w-10 h-10 rounded-xl object-cover ring-2 ring-blue-500/30"
             />
             <div className="overflow-hidden">
               <p className="text-xs font-bold text-white truncate">{user?.name || 'User'}</p>
-              <p className="text-[10px] text-slate-400 font-mono truncate">{user?.email}</p>
+              <p className="text-[10px] text-blue-300 font-mono truncate">{user?.department || user?.email}</p>
             </div>
           </div>
 
@@ -172,10 +171,10 @@ export default function PortalLayout() {
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition
+                    flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition
                     ${isActive
-                      ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-lg shadow-indigo-600/30 font-bold'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
                     }
                   `}
                 >
@@ -198,7 +197,7 @@ export default function PortalLayout() {
         <div className="p-4 border-t border-slate-800 space-y-2">
           <button
             onClick={() => setIsFairnessOpen(true)}
-            className="w-full px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-indigo-300 hover:bg-slate-800 flex items-center gap-2 transition"
+            className="w-full px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>AI Fairness Guarantee</span>
@@ -209,34 +208,34 @@ export default function PortalLayout() {
             className="w-full px-3 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 flex items-center gap-2 transition"
           >
             <LogOut className="w-4 h-4" />
-            <span>Logout ({user?.name ? user.name.split(' ')[0] : 'Account'})</span>
+            <span>Logout Account</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Main Right Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="hidden lg:flex sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-8 py-3.5 items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
-            <span className="text-indigo-400 font-bold uppercase">{role.replace('_', ' ')} PORTAL</span>
-            <span>/</span>
-            <span className="text-white font-bold capitalize">{location.pathname.split('/')[2] || 'Dashboard'}</span>
+        <header className="hidden lg:flex sticky top-0 z-30 bg-white border-b border-slate-200 px-8 py-3.5 items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold font-mono">
+            <span className="text-blue-700 uppercase">{role.replace('_', ' ')} PORTAL</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-900 capitalize">{location.pathname.split('/')[2] || 'Dashboard'}</span>
           </div>
 
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsFairnessOpen(true)}
-              className="text-xs text-slate-400 hover:text-indigo-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-indigo-500/30 transition"
+              className="text-xs text-slate-600 hover:text-blue-700 font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Non-Punitive AI Policy</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Non-Punitive AI Guarantee</span>
             </button>
 
             {/* Notification Bell Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
-                className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white relative transition"
+                className="p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 relative transition"
               >
                 <Bell className="w-4 h-4" />
                 {unreadNotifsCount > 0 && (
@@ -245,19 +244,19 @@ export default function PortalLayout() {
               </button>
 
               {notifDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-4 z-50">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-800 mb-2">
-                    <h4 className="text-xs font-bold text-white">Notifications</h4>
-                    <span className="text-[10px] text-indigo-400">{notifications.length} total</span>
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-50 text-slate-900">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200 mb-2">
+                    <h4 className="text-xs font-bold text-slate-900">Notifications</h4>
+                    <span className="text-[10px] text-blue-600 font-bold">{notifications.length} total</span>
                   </div>
                   <div className="space-y-2 max-h-60 overflow-y-auto text-xs">
                     {notifications.length === 0 ? (
                       <p className="text-slate-500 text-center py-4">No recent notifications.</p>
                     ) : (
                       notifications.slice(0, 5).map(n => (
-                        <div key={n.id} className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                          <p className="font-bold text-white text-[11px]">{n.title}</p>
-                          <p className="text-slate-400 text-[10px] mt-0.5">{n.message}</p>
+                        <div key={n.id} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <p className="font-bold text-slate-900 text-[11px]">{n.title}</p>
+                          <p className="text-slate-600 text-[10px] mt-0.5">{n.message}</p>
                         </div>
                       ))
                     )}

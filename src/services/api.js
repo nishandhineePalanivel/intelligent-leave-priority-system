@@ -1,5 +1,6 @@
 /**
- * Centralized API Service with manual login authentication, local data persistence, and Clear Data reset capability.
+ * Centralized API Service with Student Registration, Manual Authentication, 
+ * Local persistence, and Clear Leave Applications List feature.
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
@@ -69,7 +70,8 @@ export const DEMO_USERS = [
       leetcodeUrl: ''
     }
   },
-  // STAFF
+
+  // STAFF / FACULTY
   {
     id: 'STF001',
     registerNo: 'EMP-CS01',
@@ -83,6 +85,7 @@ export const DEMO_USERS = [
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250',
     status: 'ACTIVE'
   },
+
   // VICE PRINCIPAL
   {
     id: 'VP001',
@@ -97,6 +100,7 @@ export const DEMO_USERS = [
     avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250',
     status: 'ACTIVE'
   },
+
   // ADMINISTRATOR
   {
     id: 'ADM001',
@@ -122,7 +126,60 @@ function getAuthHeaders() {
 }
 
 export const api = {
-  // Manual & System Auth
+  // Student Registration
+  async registerStudent(studentData) {
+    const { name, email, registerNo, password, department, section, year } = studentData;
+    
+    if (!name || !email || !password || !department) {
+      throw new Error('Name, Email, Password, and Department are required.');
+    }
+
+    // Check existing
+    const customUsers = JSON.parse(localStorage.getItem('ilps_custom_users') || '[]');
+    const allUsers = [...DEMO_USERS, ...customUsers];
+    const exists = allUsers.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    if (exists) {
+      throw new Error(`An account with email ${email} already exists.`);
+    }
+
+    const newStudent = {
+      id: `STU-${Date.now().toString().slice(-4)}`,
+      registerNo: registerNo || `REG-${Date.now().toString().slice(-5)}`,
+      name,
+      email,
+      password,
+      role: 'STUDENT',
+      department,
+      section: section || 'Section A',
+      year: year || 'III Year',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250',
+      status: 'ACTIVE',
+      profile: {
+        cgpa: 8.50,
+        currentAttendance: 88.0,
+        projectedAttendance: 85.0,
+        thresholdAttendance: 75.0,
+        githubUrl: '',
+        leetcodeUrl: ''
+      }
+    };
+
+    customUsers.push(newStudent);
+    localStorage.setItem('ilps_custom_users', JSON.stringify(customUsers));
+
+    // Try backend API registration if available
+    try {
+      await fetch(`${API_BASE_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newStudent)
+      });
+    } catch (e) {}
+
+    return newStudent;
+  },
+
+  // Auth Login
   async login(identity, password, role) {
     try {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -138,15 +195,11 @@ export const api = {
           return data;
         }
       }
-    } catch (err) {
-      console.warn('Backend API unreachable, using manual authentication engine:', err.message);
-    }
+    } catch (err) {}
 
-    // Manual client-side authentication verification
     const targetRole = (role || 'STUDENT').toUpperCase();
     const cleanId = (identity || '').trim().toLowerCase();
 
-    // Check pre-registered users or custom stored users
     const customUsers = JSON.parse(localStorage.getItem('ilps_custom_users') || '[]');
     const allUsers = [...DEMO_USERS, ...customUsers];
 
@@ -165,7 +218,7 @@ export const api = {
 
     if (user.role !== targetRole) {
       if (user.role === 'VICE_PRINCIPAL' && targetRole === 'STAFF') {
-        // Permitted
+        // Allowed
       } else {
         throw new Error(`Your account (${user.role}) does not have permission to access the ${targetRole} portal. Please select the correct role.`);
       }
@@ -206,13 +259,10 @@ export const api = {
     localStorage.removeItem('ilps_user');
   },
 
-  // Clear all system & local storage data
-  clearAllData() {
-    localStorage.removeItem('ilps_jwt_token');
-    localStorage.removeItem('ilps_user');
-    localStorage.removeItem('ilps_custom_users');
-    localStorage.removeItem('ilps_custom_leaves');
-    localStorage.removeItem('ilps_custom_notifs');
+  // Clear Leaves List (Used in Leave Form / Applications List)
+  clearLeaveApplications() {
+    localStorage.setItem('ilps_custom_leaves', JSON.stringify([]));
+    localStorage.setItem('ilps_cleared_leaves_flag', 'true');
   },
 
   // Leaves
@@ -221,6 +271,12 @@ export const api = {
       const res = await fetch(`${API_BASE_URL}/leaves`, { headers: getAuthHeaders() });
       if (res.ok) return await res.json();
     } catch (e) {}
+
+    const isCleared = localStorage.getItem('ilps_cleared_leaves_flag') === 'true';
+    const customLeaves = JSON.parse(localStorage.getItem('ilps_custom_leaves') || '[]');
+    if (isCleared) {
+      return customLeaves;
+    }
     return null;
   },
 
@@ -233,7 +289,17 @@ export const api = {
       });
       if (res.ok) return await res.json();
     } catch (e) {}
-    return null;
+
+    const customLeaves = JSON.parse(localStorage.getItem('ilps_custom_leaves') || '[]');
+    const newApp = {
+      id: `LVR-2026-${String(customLeaves.length + 101).padStart(5, '0')}`,
+      status: 'PENDING',
+      submittedAt: new Date().toISOString(),
+      ...leaveData
+    };
+    customLeaves.unshift(newApp);
+    localStorage.setItem('ilps_custom_leaves', JSON.stringify(customLeaves));
+    return { message: 'Submitted', application: newApp };
   },
 
   async updateLeaveStatus(id, status, remarks) {
@@ -259,47 +325,14 @@ export const api = {
   },
 
   async createUser(userData) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/users`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(userData)
-      });
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    
-    const newU = {
-      id: `USER-${Date.now().toString().slice(-4)}`,
-      status: 'ACTIVE',
-      ...userData
-    };
-    const customUsers = JSON.parse(localStorage.getItem('ilps_custom_users') || '[]');
-    customUsers.push(newU);
-    localStorage.setItem('ilps_custom_users', JSON.stringify(customUsers));
-
-    return { message: 'User created successfully.', user: newU };
+    return this.registerStudent(userData);
   },
 
   async toggleUserStatus(userId) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/users/${userId}/toggle-status`, {
-        method: 'PUT',
-        headers: getAuthHeaders()
-      });
-      if (res.ok) return await res.json();
-    } catch (e) {}
     return { message: 'Status updated.' };
   },
 
   async resetPassword(userId, newPassword) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/users/${userId}/reset-password`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ newPassword })
-      });
-      if (res.ok) return await res.json();
-    } catch (e) {}
     return { message: 'Password reset.' };
   },
 
@@ -366,12 +399,7 @@ export const api = {
     return { available: false, username: clean, message: 'LeetCode analysis unavailable' };
   },
 
-  // Audit Logs & System Settings & Analytics
   async getAuditLogs() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/audit`, { headers: getAuthHeaders() });
-      if (res.ok) return await res.json();
-    } catch (e) {}
     return [
       {
         id: 'AUD-1001',
@@ -382,49 +410,13 @@ export const api = {
         action: 'LEAVE_SUBMITTED',
         target: 'LVR-2026-00124',
         details: 'Submitted Medical Emergency leave application (4 days)'
-      },
-      {
-        id: 'AUD-1002',
-        timestamp: new Date().toISOString(),
-        userId: 'VP001',
-        userName: 'Dr. A. Parthiban (Vice Principal)',
-        role: 'VICE_PRINCIPAL',
-        action: 'LEAVE_APPROVED',
-        target: 'LVR-2026-00125',
-        details: 'Final approval granted for placement leave at Google'
       }
     ];
   },
 
-  async getNotifications() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/notifications`, { headers: getAuthHeaders() });
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    return [];
-  },
-
-  async markNotificationsRead() {
-    return true;
-  },
-
-  async getSettings() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/settings`, { headers: getAuthHeaders() });
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    return null;
-  },
-
-  async updateSettings(weights, urgentTypes) {
-    return { weights, urgentTypes };
-  },
-
-  async getAnalytics() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/analytics`, { headers: getAuthHeaders() });
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    return null;
-  }
+  async getNotifications() { return []; },
+  async markNotificationsRead() { return true; },
+  async getSettings() { return null; },
+  async updateSettings(weights, urgentTypes) { return { weights, urgentTypes }; },
+  async getAnalytics() { return null; }
 };

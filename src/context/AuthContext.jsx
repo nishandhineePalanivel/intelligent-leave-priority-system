@@ -42,6 +42,17 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const registerStudent = async (studentData) => {
+    setError(null);
+    try {
+      const newStudent = await api.registerStudent(studentData);
+      return newStudent;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   const logout = () => {
     api.logout();
     setUser(null);
@@ -55,6 +66,7 @@ export function AuthProvider({ children }) {
       error,
       setError,
       login,
+      registerStudent,
       logout,
       isAuthenticated: Boolean(user),
       role: user?.role || null

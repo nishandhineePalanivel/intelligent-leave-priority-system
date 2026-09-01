@@ -24,35 +24,24 @@ export function LeaveProvider({ children }) {
   const [selectedAttendanceRisk, setSelectedAttendanceRisk] = useState('ALL');
   const [sortBy, setSortBy] = useState('SCORE_DESC');
 
-  // Fetch live backend data when authenticated
+  // Fetch live backend or local data
   const refreshData = async () => {
+    const isCleared = localStorage.getItem('ilps_cleared_leaves_flag') === 'true';
+    if (isCleared) {
+      const customLeaves = JSON.parse(localStorage.getItem('ilps_custom_leaves') || '[]');
+      setRawRequests(customLeaves);
+      return;
+    }
+
     if (!isAuthenticated) return;
     setLoading(true);
     try {
       const leavesData = await api.getLeaves().catch(() => null);
-      if (Array.isArray(leavesData) && leavesData.length > 0) {
+      if (Array.isArray(leavesData)) {
         setRawRequests(leavesData);
       }
-
-      const notifsData = await api.getNotifications().catch(() => null);
-      if (Array.isArray(notifsData)) {
-        setNotifications(notifsData);
-      }
-
-      if (user?.role === 'ADMINISTRATOR') {
-        const auditData = await api.getAuditLogs().catch(() => null);
-        if (Array.isArray(auditData)) {
-          setAuditLogs(auditData);
-        }
-      }
-
-      const settingsData = await api.getSettings().catch(() => null);
-      if (settingsData?.weights) {
-        setWeights(settingsData.weights);
-        if (settingsData.urgentTypes) setUrgentTypes(settingsData.urgentTypes);
-      }
     } catch (e) {
-      console.warn('API sync fallback to local memory:', e.message);
+      console.warn('API sync fallback:', e.message);
     } finally {
       setLoading(false);
     }
@@ -62,7 +51,13 @@ export function LeaveProvider({ children }) {
     refreshData();
   }, [isAuthenticated, user?.id]);
 
-  // Recalculate priority scores dynamically whenever weights, urgentTypes, or rawRequests change
+  // Clear all leave applications list
+  const clearAllLeaves = () => {
+    api.clearLeaveApplications();
+    setRawRequests([]);
+  };
+
+  // Recalculate priority scores dynamically
   const processedRequests = useMemo(() => {
     return rawRequests.map(req => {
       const priorityInfo = calculatePriorityScore(req, weights, urgentTypes);
@@ -76,31 +71,19 @@ export function LeaveProvider({ children }) {
   // Filtered & Sorted Requests
   const filteredRequests = useMemo(() => {
     return processedRequests.filter(req => {
-      // Role Scoping:
-      if (user?.role === 'STUDENT' && req.studentId && req.studentId !== user.id) {
+      if (user?.role === 'STUDENT' && req.studentId && req.studentId !== user.id && req.studentName !== user.name) {
         return false;
       }
-      if (user?.role === 'STAFF' && user.department && user.department !== 'Administration' && req.department !== user.department) {
-        // filter by dept if needed
-      }
 
-      // Search match
       const matchSearch = searchTerm === '' ||
         (req.studentName && req.studentName.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (req.studentId && req.studentId.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (req.id && req.id.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (req.reasonType && req.reasonType.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      // Priority match
       const matchPriority = selectedPriority === 'ALL' || req.calculatedPriority.levelKey === selectedPriority;
-
-      // Leave Type match
       const matchType = selectedLeaveType === 'ALL' || req.reasonType === selectedLeaveType;
-
-      // Department match
       const matchDept = selectedDept === 'ALL' || req.department === selectedDept;
-
-      // Attendance Risk match
       const matchRisk = selectedAttendanceRisk === 'ALL' || req.calculatedPriority.metrics.attendanceRisk === selectedAttendanceRisk;
 
       return matchSearch && matchPriority && matchType && matchDept && matchRisk;
@@ -122,7 +105,7 @@ export function LeaveProvider({ children }) {
     });
   }, [processedRequests, user, searchTerm, selectedPriority, selectedLeaveType, selectedDept, selectedAttendanceRisk, sortBy]);
 
-  // Quick stats counters
+  // Priority stats
   const priorityStats = useMemo(() => {
     const counts = {
       CRITICAL: 0,
@@ -154,24 +137,10 @@ export function LeaveProvider({ children }) {
 
   // Handlers
   const addLeaveRequest = async (newReq) => {
-    if (isAuthenticated) {
-      try {
-        const res = await api.submitLeave(newReq);
-        if (res?.application) {
-          setRawRequests(prev => [res.application, ...prev]);
-          refreshData();
-          return res.application;
-        }
-      } catch (err) {
-        console.warn('API error, falling back to local addition:', err.message);
-      }
-    }
-
-    // Local state fallback
     const priorityInfo = calculatePriorityScore(newReq, weights, urgentTypes);
     const formatted = {
       ...newReq,
-      id: `LVR-2026-${String(rawRequests.length + 124).padStart(5, '0')}`,
+      id: `LVR-2026-${String(rawRequests.length + 101).padStart(5, '0')}`,
       submittedAt: new Date().toISOString(),
       studentId: user?.id || 'STU001',
       studentName: user?.name || newReq.studentName || 'Student',
@@ -182,24 +151,19 @@ export function LeaveProvider({ children }) {
         { step: 'Submission', role: user?.name || 'Student', status: 'COMPLETED', timestamp: new Date().toISOString(), comment: 'Request submitted.' }
       ]
     };
+    
     setRawRequests(prev => [formatted, ...prev]);
+
+    // Save to local storage for persistence
+    const customLeaves = JSON.parse(localStorage.getItem('ilps_custom_leaves') || '[]');
+    customLeaves.unshift(formatted);
+    localStorage.setItem('ilps_custom_leaves', JSON.stringify(customLeaves));
+    localStorage.setItem('ilps_cleared_leaves_flag', 'true');
+
     return formatted;
   };
 
   const updateRequestStatus = async (id, newStatus, roleName, comment) => {
-    if (isAuthenticated) {
-      try {
-        const res = await api.updateLeaveStatus(id, newStatus, comment);
-        if (res?.leave) {
-          setRawRequests(prev => prev.map(r => r.id === id ? res.leave : r));
-          refreshData();
-          return;
-        }
-      } catch (err) {
-        console.warn('API error, using local state update:', err.message);
-      }
-    }
-
     setRawRequests(prev => prev.map(req => {
       if (req.id !== id) return req;
       return {
@@ -219,28 +183,13 @@ export function LeaveProvider({ children }) {
     }));
   };
 
-  const updateWeights = async (newWeights) => {
-    setWeights(newWeights);
-    if (isAuthenticated && user?.role === 'ADMINISTRATOR') {
-      try {
-        await api.updateSettings(newWeights, urgentTypes);
-      } catch (e) {}
-    }
-  };
-
-  const toggleUrgentType = async (typeName) => {
-    const updated = urgentTypes.includes(typeName) 
-      ? urgentTypes.filter(t => t !== typeName) 
-      : [...urgentTypes, typeName];
-    setUrgentTypes(updated);
-    if (isAuthenticated && user?.role === 'ADMINISTRATOR') {
-      try {
-        await api.updateSettings(weights, updated);
-      } catch (e) {}
-    }
+  const updateWeights = (newWeights) => setWeights(newWeights);
+  const toggleUrgentType = (typeName) => {
+    setUrgentTypes(prev => prev.includes(typeName) ? prev.filter(t => t !== typeName) : [...prev, typeName]);
   };
 
   const resetToDefault = () => {
+    localStorage.removeItem('ilps_cleared_leaves_flag');
     setWeights(DEFAULT_WEIGHTS);
     setThresholds(DEFAULT_THRESHOLDS);
     setUrgentTypes(URGENT_LEAVE_TYPES);
@@ -262,6 +211,7 @@ export function LeaveProvider({ children }) {
       auditLogs,
       loading,
       refreshData,
+      clearAllLeaves,
       searchTerm,
       setSearchTerm,
       selectedPriority,
