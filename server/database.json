@@ -1,0 +1,404 @@
+{
+  "users": [
+    {
+      "id": "STU001",
+      "registerNo": "21CS094",
+      "name": "Arun Kumar",
+      "email": "student@college.edu",
+      "role": "STUDENT",
+      "department": "Computer Science & Engineering",
+      "section": "CSE-A",
+      "year": "III Year",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250",
+      "status": "ACTIVE",
+      "passwordHash": "$2b$10$FLHrlQn2hGA5Z7x.WrIFB.fNqHRFIeO/KRXUe703lSw6oud.NoO0q",
+      "createdAt": "2026-09-01T12:52:13.358Z"
+    },
+    {
+      "id": "STU002",
+      "registerNo": "21CS112",
+      "name": "Bhavana S",
+      "email": "bhavana@college.edu",
+      "role": "STUDENT",
+      "department": "Computer Science & Engineering",
+      "section": "CSE-A",
+      "year": "III Year",
+      "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=250",
+      "status": "ACTIVE",
+      "passwordHash": "$2b$10$w62QbwbAt9gk3iokPNMNWuopQmeOYXWAB6ch.qY7CXdjEnOqbRzpC",
+      "createdAt": "2026-09-01T12:52:13.556Z"
+    },
+    {
+      "id": "STU003",
+      "registerNo": "21CS045",
+      "name": "Chandran M",
+      "email": "chandran@college.edu",
+      "role": "STUDENT",
+      "department": "Computer Science & Engineering",
+      "section": "CSE-B",
+      "year": "III Year",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250",
+      "status": "ACTIVE",
+      "passwordHash": "$2b$10$Q8TQ0NQrVkO9WvvTST5weeH0UEBCSnb0KVwpfp.61e6y4s4FsC7i6",
+      "createdAt": "2026-09-01T12:52:13.750Z"
+    },
+    {
+      "id": "STF001",
+      "registerNo": "EMP-CS01",
+      "name": "Prof. K. Venkatesh",
+      "email": "staff@college.edu",
+      "role": "STAFF",
+      "department": "Computer Science & Engineering",
+      "section": "Staff/Advisor",
+      "year": "Faculty",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250",
+      "status": "ACTIVE",
+      "passwordHash": "$2b$10$nflAIdhSQIslP3.8Lqt/TOJwY9.fJIRazK6AMFnfgR5ITd.drvu0S",
+      "createdAt": "2026-09-01T12:52:13.946Z"
+    },
+    {
+      "id": "STF002",
+      "registerNo": "EMP-IT01",
+      "name": "Dr. M. Lakshmi",
+      "email": "lakshmi@college.edu",
+      "role": "STAFF",
+      "department": "Information Technology",
+      "section": "Staff/HOD",
+      "year": "Faculty",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250",
+      "status": "ACTIVE",
+      "passwordHash": "$2b$10$e6m4Z3wrDd60ASE2JPJ1s.gESu3GOvZCcvYGoCWHw/M18TahAEmO.",
+      "createdAt": "2026-09-01T12:52:14.147Z"
+    },
+    {
+      "id": "ADM001",
+      "registerNo": "ADM-001",
+      "name": "Dr. S. R. Ramanathan (Admin)",
+      "email": "admin@college.edu",
+      "role": "ADMINISTRATOR",
+      "department": "Administration",
+      "section": "Dean Academic",
+      "year": "Executive",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250",
+      "status": "ACTIVE",
+      "passwordHash": "$2b$10$NE8fg6.HcihkZ3KU1mql3ewSxecdoiRSyVaQj5PlocQe2iaxQgfp2",
+      "createdAt": "2026-09-01T12:52:14.354Z"
+    }
+  ],
+  "studentProfiles": {
+    "STU001": {
+      "cgpa": 8.84,
+      "currentAttendance": 88.2,
+      "projectedAttendance": 85.1,
+      "thresholdAttendance": 75,
+      "githubUrl": "https://github.com/torvalds",
+      "leetcodeUrl": "https://leetcode.com/u/neal_wu/",
+      "githubScore": 86,
+      "leetcodeScore": 81
+    },
+    "STU002": {
+      "cgpa": 9.12,
+      "currentAttendance": 92.4,
+      "projectedAttendance": 90.8,
+      "thresholdAttendance": 75,
+      "githubUrl": "https://github.com/gaearon",
+      "leetcodeUrl": "https://leetcode.com/u/tourist/",
+      "githubScore": 94,
+      "leetcodeScore": 90
+    },
+    "STU003": {
+      "cgpa": 8.2,
+      "currentAttendance": 84.5,
+      "projectedAttendance": 81.2,
+      "thresholdAttendance": 75,
+      "githubUrl": "https://github.com/suckow",
+      "leetcodeUrl": "",
+      "githubScore": 45,
+      "leetcodeScore": null
+    }
+  },
+  "leaveApplications": [
+    {
+      "id": "LVR-2026-00124",
+      "studentId": "STU001",
+      "registerNo": "21CS094",
+      "studentName": "Arun Kumar",
+      "department": "Computer Science & Engineering",
+      "section": "CSE-A",
+      "year": "III Year",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250",
+      "reasonType": "Medical Emergency",
+      "reasonDetails": "Severe acute appendicitis requiring emergency hospitalization and surgery. Doctor prescribed 4 days absolute bed rest.",
+      "startDate": "2026-09-02",
+      "endDate": "2026-09-05",
+      "totalDays": 4,
+      "submittedAt": "2026-09-01T08:15:00Z",
+      "proofRequired": true,
+      "proof": {
+        "fileName": "Apollo_Hospital_Admission_Notice.pdf",
+        "fileSize": "1.4 MB",
+        "strengthScore": 94,
+        "nameMatch": "Strong",
+        "dateMatch": "Strong",
+        "reasonMatch": "Strong",
+        "completeness": "High",
+        "extractedText": "Patient: Arun Kumar | Hospitalized on: 02-Sep-2026 to 05-Sep-2026 | Diagnosis: Acute Appendicitis",
+        "aiConfidence": "98.5%"
+      },
+      "attendance": {
+        "current": 88.2,
+        "projected": 85.1,
+        "threshold": 75,
+        "classesAffected": 24
+      },
+      "academic": {
+        "cgpa": 8.84,
+        "github": 86,
+        "leetcode": 81,
+        "developmentActivity": "HIGH"
+      },
+      "leaveHistory": {
+        "totalDaysThisMonth": 1,
+        "approvedLeavesCount": 2,
+        "rejectedLeavesCount": 0,
+        "unusualPattern": false,
+        "score": 95
+      },
+      "priorityScore": 87,
+      "priorityLevel": "HIGH",
+      "status": "PENDING",
+      "approvalTimeline": [
+        {
+          "step": "Submission",
+          "role": "Student (Arun Kumar)",
+          "status": "COMPLETED",
+          "timestamp": "2026-09-01T08:15:00Z",
+          "comment": "Submitted with official hospital medical certificate."
+        }
+      ]
+    },
+    {
+      "id": "LVR-2026-00125",
+      "studentId": "STU002",
+      "registerNo": "21CS112",
+      "studentName": "Bhavana S",
+      "department": "Computer Science & Engineering",
+      "section": "CSE-A",
+      "year": "III Year",
+      "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=250",
+      "reasonType": "Placement / Interview",
+      "reasonDetails": "Final round technical interview and HR discussion at Google Bangalore office for SDE Internship.",
+      "startDate": "2026-09-03",
+      "endDate": "2026-09-04",
+      "totalDays": 2,
+      "submittedAt": "2026-09-01T09:30:00Z",
+      "proofRequired": true,
+      "proof": {
+        "fileName": "Google_Interview_CallLetter.pdf",
+        "fileSize": "890 KB",
+        "strengthScore": 92,
+        "nameMatch": "Strong",
+        "dateMatch": "Strong",
+        "reasonMatch": "Strong",
+        "completeness": "High",
+        "extractedText": "Candidate: Bhavana S | Interview Date: Sep 03-04, 2026 | Location: Google Signature Towers, Bangalore",
+        "aiConfidence": "96.2%"
+      },
+      "attendance": {
+        "current": 92.4,
+        "projected": 90.8,
+        "threshold": 75,
+        "classesAffected": 12
+      },
+      "academic": {
+        "cgpa": 9.12,
+        "github": 94,
+        "leetcode": 90,
+        "developmentActivity": "HIGH"
+      },
+      "leaveHistory": {
+        "totalDaysThisMonth": 0,
+        "approvedLeavesCount": 1,
+        "rejectedLeavesCount": 0,
+        "unusualPattern": false,
+        "score": 95
+      },
+      "priorityScore": 91,
+      "priorityLevel": "CRITICAL",
+      "status": "PENDING",
+      "approvalTimeline": [
+        {
+          "step": "Submission",
+          "role": "Student (Bhavana S)",
+          "status": "COMPLETED",
+          "timestamp": "2026-09-01T09:30:00Z",
+          "comment": "Official Google placement invitation attached."
+        }
+      ]
+    },
+    {
+      "id": "LVR-2026-00126",
+      "studentId": "STU003",
+      "registerNo": "21CS045",
+      "studentName": "Chandran M",
+      "department": "Computer Science & Engineering",
+      "section": "CSE-B",
+      "year": "III Year",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250",
+      "reasonType": "Family Emergency",
+      "reasonDetails": "Attending elder sister wedding ceremony in hometown and organizing family arrangements.",
+      "startDate": "2026-09-04",
+      "endDate": "2026-09-07",
+      "totalDays": 4,
+      "submittedAt": "2026-09-01T10:00:00Z",
+      "proofRequired": true,
+      "proof": {
+        "fileName": "Wedding_Invitation_Card.pdf",
+        "fileSize": "2.1 MB",
+        "strengthScore": 82,
+        "nameMatch": "Moderate",
+        "dateMatch": "Strong",
+        "reasonMatch": "Strong",
+        "completeness": "Medium",
+        "extractedText": "Wedding Ceremony of Archana M & Karthik V | Family Members: Chandran M",
+        "aiConfidence": "88.0%"
+      },
+      "attendance": {
+        "current": 84.5,
+        "projected": 81.2,
+        "threshold": 75,
+        "classesAffected": 24
+      },
+      "academic": {
+        "cgpa": 8.2,
+        "github": 45,
+        "leetcode": null,
+        "developmentActivity": "MODERATE"
+      },
+      "leaveHistory": {
+        "totalDaysThisMonth": 2,
+        "approvedLeavesCount": 3,
+        "rejectedLeavesCount": 0,
+        "unusualPattern": false,
+        "score": 88
+      },
+      "priorityScore": 78,
+      "priorityLevel": "HIGH",
+      "status": "APPROVED",
+      "approvalTimeline": [
+        {
+          "step": "Submission",
+          "role": "Student (Chandran M)",
+          "status": "COMPLETED",
+          "timestamp": "2026-09-01T10:00:00Z",
+          "comment": "Family wedding invitation provided."
+        },
+        {
+          "step": "Approval",
+          "role": "Prof. K. Venkatesh (Staff)",
+          "status": "APPROVED",
+          "timestamp": "2026-09-01T11:45:00Z",
+          "comment": "Verified family event. Approved."
+        }
+      ]
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "AUD-304387",
+      "timestamp": "2026-09-01T12:55:04.387Z",
+      "userId": "ADM001",
+      "userName": "Dr. S. R. Ramanathan (Admin)",
+      "role": "ADMINISTRATOR",
+      "action": "USER_LOGIN",
+      "target": "ADMINISTRATOR",
+      "details": "Successful login to ADMINISTRATOR portal"
+    },
+    {
+      "id": "AUD-304161",
+      "timestamp": "2026-09-01T12:55:04.161Z",
+      "userId": "STF001",
+      "userName": "Prof. K. Venkatesh",
+      "role": "STAFF",
+      "action": "USER_LOGIN",
+      "target": "STAFF",
+      "details": "Successful login to STAFF portal"
+    },
+    {
+      "id": "AUD-303929",
+      "timestamp": "2026-09-01T12:55:03.929Z",
+      "userId": "STU001",
+      "userName": "Arun Kumar",
+      "role": "STUDENT",
+      "action": "USER_LOGIN",
+      "target": "STUDENT",
+      "details": "Successful login to STUDENT portal"
+    },
+    {
+      "id": "AUD-1001",
+      "timestamp": "2026-09-01T08:15:00Z",
+      "userId": "STU001",
+      "userName": "Arun Kumar",
+      "role": "STUDENT",
+      "action": "LEAVE_SUBMITTED",
+      "target": "LVR-2026-00124",
+      "details": "Submitted Medical Emergency leave application (4 days)"
+    },
+    {
+      "id": "AUD-1002",
+      "timestamp": "2026-09-01T09:30:00Z",
+      "userId": "STU002",
+      "userName": "Bhavana S",
+      "role": "STUDENT",
+      "action": "LEAVE_SUBMITTED",
+      "target": "LVR-2026-00125",
+      "details": "Submitted Placement / Interview leave application (2 days)"
+    },
+    {
+      "id": "AUD-1003",
+      "timestamp": "2026-09-01T11:45:00Z",
+      "userId": "STF001",
+      "userName": "Prof. K. Venkatesh",
+      "role": "STAFF",
+      "action": "LEAVE_APPROVED",
+      "target": "LVR-2026-00126",
+      "details": "Approved family emergency leave for Chandran M"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "NOTIF-001",
+      "userId": "STU001",
+      "title": "Leave Submitted Successfully",
+      "message": "Your leave application LVR-2026-00124 has been submitted and assigned High Priority (87/100).",
+      "type": "info",
+      "read": false,
+      "timestamp": "2026-09-01T12:52:14.354Z"
+    },
+    {
+      "id": "NOTIF-002",
+      "userId": "STF001",
+      "title": "2 Pending Leave Applications",
+      "message": "You have 2 pending leave applications requiring review in Computer Science department.",
+      "type": "warning",
+      "read": false,
+      "timestamp": "2026-09-01T12:52:14.354Z"
+    }
+  ],
+  "systemSettings": {
+    "weights": {
+      "reasonUrgency": 30,
+      "proofStrength": 25,
+      "attendanceImpact": 20,
+      "academicConsistency": 15,
+      "leaveHistory": 10
+    },
+    "urgentTypes": [
+      "Medical Emergency",
+      "Family Emergency",
+      "Placement / Interview",
+      "Official Academic Event",
+      "Government Examination"
+    ]
+  }
+}
