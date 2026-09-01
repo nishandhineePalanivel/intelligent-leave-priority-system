@@ -1,5 +1,5 @@
 /**
- * Centralized API Service with JWT authentication header handling and multi-user demo fallback
+ * Centralized API Service with manual login authentication, local data persistence, and Clear Data reset capability.
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
@@ -69,50 +69,7 @@ export const DEMO_USERS = [
       leetcodeUrl: ''
     }
   },
-  {
-    id: 'STU004',
-    registerNo: '21CS078',
-    name: 'Divya K',
-    email: 'divya@college.edu',
-    password: 'Student@123',
-    role: 'STUDENT',
-    department: 'Computer Science & Engineering',
-    section: 'CSE-B',
-    year: 'III Year',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
-    status: 'ACTIVE',
-    profile: {
-      cgpa: 8.10,
-      currentAttendance: 78.5,
-      projectedAttendance: 76.0,
-      thresholdAttendance: 75.0,
-      githubUrl: '',
-      leetcodeUrl: ''
-    }
-  },
-  {
-    id: 'STU005',
-    registerNo: '21CS150',
-    name: 'Ezhil R',
-    email: 'ezhil@college.edu',
-    password: 'Student@123',
-    role: 'STUDENT',
-    department: 'Computer Science & Engineering',
-    section: 'CSE-A',
-    year: 'III Year',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
-    status: 'ACTIVE',
-    profile: {
-      cgpa: 7.20,
-      currentAttendance: 74.8,
-      projectedAttendance: 71.5,
-      thresholdAttendance: 75.0,
-      githubUrl: '',
-      leetcodeUrl: ''
-    }
-  },
-
-  // STAFF / FACULTY / ADVISORS
+  // STAFF
   {
     id: 'STF001',
     registerNo: 'EMP-CS01',
@@ -126,21 +83,7 @@ export const DEMO_USERS = [
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250',
     status: 'ACTIVE'
   },
-  {
-    id: 'STF002',
-    registerNo: 'EMP-IT01',
-    name: 'Dr. M. Lakshmi',
-    email: 'advisor.it@college.edu',
-    password: 'Staff@123',
-    role: 'STAFF',
-    department: 'Information Technology',
-    section: 'Class Advisor',
-    year: 'Faculty',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250',
-    status: 'ACTIVE'
-  },
-
-  // VICE PRINCIPAL / HOD
+  // VICE PRINCIPAL
   {
     id: 'VP001',
     registerNo: 'EMP-VP01',
@@ -154,7 +97,6 @@ export const DEMO_USERS = [
     avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250',
     status: 'ACTIVE'
   },
-
   // ADMINISTRATOR
   {
     id: 'ADM001',
@@ -180,7 +122,7 @@ function getAuthHeaders() {
 }
 
 export const api = {
-  // Auth
+  // Manual & System Auth
   async login(identity, password, role) {
     try {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -197,14 +139,20 @@ export const api = {
         }
       }
     } catch (err) {
-      console.warn('Backend API unreachable, using client authentication engine:', err.message);
+      console.warn('Backend API unreachable, using manual authentication engine:', err.message);
     }
 
-    // Client-side fallback authentication for static deployments
+    // Manual client-side authentication verification
     const targetRole = (role || 'STUDENT').toUpperCase();
-    const user = DEMO_USERS.find(u => 
-      u.email.toLowerCase() === identity.trim().toLowerCase() ||
-      u.registerNo.toLowerCase() === identity.trim().toLowerCase()
+    const cleanId = (identity || '').trim().toLowerCase();
+
+    // Check pre-registered users or custom stored users
+    const customUsers = JSON.parse(localStorage.getItem('ilps_custom_users') || '[]');
+    const allUsers = [...DEMO_USERS, ...customUsers];
+
+    const user = allUsers.find(u => 
+      u.email.toLowerCase() === cleanId ||
+      (u.registerNo && u.registerNo.toLowerCase() === cleanId)
     );
 
     if (!user) {
@@ -215,10 +163,9 @@ export const api = {
       throw new Error('Invalid credentials. Password incorrect.');
     }
 
-    // Handle role verification: VICE_PRINCIPAL can access STAFF or VICE_PRINCIPAL portal
     if (user.role !== targetRole) {
       if (user.role === 'VICE_PRINCIPAL' && targetRole === 'STAFF') {
-        // Allowed
+        // Permitted
       } else {
         throw new Error(`Your account (${user.role}) does not have permission to access the ${targetRole} portal. Please select the correct role.`);
       }
@@ -257,6 +204,15 @@ export const api = {
   logout() {
     localStorage.removeItem('ilps_jwt_token');
     localStorage.removeItem('ilps_user');
+  },
+
+  // Clear all system & local storage data
+  clearAllData() {
+    localStorage.removeItem('ilps_jwt_token');
+    localStorage.removeItem('ilps_user');
+    localStorage.removeItem('ilps_custom_users');
+    localStorage.removeItem('ilps_custom_leaves');
+    localStorage.removeItem('ilps_custom_notifs');
   },
 
   // Leaves
@@ -298,7 +254,8 @@ export const api = {
       const res = await fetch(`${API_BASE_URL}/users`, { headers: getAuthHeaders() });
       if (res.ok) return await res.json();
     } catch (e) {}
-    return DEMO_USERS.map(({ password, ...u }) => u);
+    const customUsers = JSON.parse(localStorage.getItem('ilps_custom_users') || '[]');
+    return [...DEMO_USERS, ...customUsers].map(({ password, ...u }) => u);
   },
 
   async createUser(userData) {
@@ -310,11 +267,16 @@ export const api = {
       });
       if (res.ok) return await res.json();
     } catch (e) {}
+    
     const newU = {
       id: `USER-${Date.now().toString().slice(-4)}`,
       status: 'ACTIVE',
       ...userData
     };
+    const customUsers = JSON.parse(localStorage.getItem('ilps_custom_users') || '[]');
+    customUsers.push(newU);
+    localStorage.setItem('ilps_custom_users', JSON.stringify(customUsers));
+
     return { message: 'User created successfully.', user: newU };
   },
 
