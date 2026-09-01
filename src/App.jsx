@@ -14,7 +14,7 @@ import ApplyLeave from './pages/student/ApplyLeave';
 import GitHubAnalysis from './pages/student/GitHubAnalysis';
 import LeetCodeAnalysis from './pages/student/LeetCodeAnalysis';
 
-// Staff Pages
+// Staff & Vice Principal Pages
 import StaffDashboard from './pages/staff/StaffDashboard';
 
 // Admin Pages
@@ -30,7 +30,7 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-400 flex items-center justify-center font-mono text-xs">
-        Authenticating institutional session...
+        Authenticating session...
       </div>
     );
   }
@@ -97,11 +97,11 @@ export default function App() {
               <Route path="profile" element={<StudentDashboard />} />
             </Route>
 
-            {/* Staff Portal */}
+            {/* Staff & Vice Principal Portal */}
             <Route 
               path="/staff" 
               element={
-                <ProtectedRoute allowedRoles={['STAFF']}>
+                <ProtectedRoute allowedRoles={['STAFF', 'VICE_PRINCIPAL']}>
                   <PortalLayout />
                 </ProtectedRoute>
               }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { DEMO_USERS } from '../services/api';
 import { 
   Sparkles, 
   Lock, 
@@ -8,12 +9,13 @@ import {
   UserCheck, 
   GraduationCap, 
   Sliders, 
+  Building2,
   AlertCircle, 
   ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
   KeyRound,
-  X
+  X,
+  ChevronDown,
+  User
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -27,20 +29,20 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isForgotOpen, setIsForgotOpen] = useState(false);
+  const [selectedDemoUser, setSelectedDemoUser] = useState('');
 
   useEffect(() => {
-    // If query string role is updated
     const qRole = searchParams.get('role');
-    if (qRole && ['STUDENT', 'STAFF', 'ADMINISTRATOR'].includes(qRole.toUpperCase())) {
+    if (qRole && ['STUDENT', 'STAFF', 'VICE_PRINCIPAL', 'ADMINISTRATOR'].includes(qRole.toUpperCase())) {
       setRole(qRole.toUpperCase());
     }
   }, [searchParams]);
 
   useEffect(() => {
-    // Redirect if already logged in
     if (user) {
       if (user.role === 'STUDENT') navigate('/student/dashboard');
       else if (user.role === 'STAFF') navigate('/staff/dashboard');
+      else if (user.role === 'VICE_PRINCIPAL') navigate('/staff/dashboard');
       else if (user.role === 'ADMINISTRATOR') navigate('/admin/dashboard');
     }
   }, [user, navigate]);
@@ -58,12 +60,12 @@ export default function LoginPage() {
     try {
       const res = await login(identity, password, role);
       if (!res || !res.user) {
-        throw new Error('Authentication failed. Invalid user record.');
+        throw new Error('Authentication failed.');
       }
       const userRole = res.user.role;
 
       if (userRole === 'STUDENT') navigate('/student/dashboard');
-      else if (userRole === 'STAFF') navigate('/staff/dashboard');
+      else if (userRole === 'STAFF' || userRole === 'VICE_PRINCIPAL') navigate('/staff/dashboard');
       else if (userRole === 'ADMINISTRATOR') navigate('/admin/dashboard');
     } catch (err) {
       setErrorMsg(err.message || 'Invalid credentials or role mismatch.');
@@ -72,48 +74,73 @@ export default function LoginPage() {
     }
   };
 
-  const fillDemo = (demoRole) => {
-    if (demoRole === 'STUDENT') {
-      setIdentity('student@college.edu');
-      setPassword('Student@123');
-      setRole('STUDENT');
-    } else if (demoRole === 'STAFF') {
-      setIdentity('staff@college.edu');
-      setPassword('Staff@123');
-      setRole('STAFF');
-    } else if (demoRole === 'ADMINISTRATOR') {
-      setIdentity('admin@college.edu');
-      setPassword('Admin@123');
-      setRole('ADMINISTRATOR');
+  const handleSelectDemoUser = (userEmail) => {
+    setSelectedDemoUser(userEmail);
+    const found = DEMO_USERS.find(u => u.email === userEmail);
+    if (found) {
+      setIdentity(found.email);
+      setPassword(found.password);
+      setRole(found.role);
+      setErrorMsg('');
     }
-    setErrorMsg('');
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden font-sans selection:bg-indigo-500 selection:text-white">
-      {/* Background glow effects */}
+      {/* Background ambient lighting */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
-      {/* Main Login Card */}
+      {/* Main Authentication Card */}
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative z-10">
         
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600 mx-auto flex items-center justify-center shadow-lg shadow-indigo-600/30 mb-4 ring-1 ring-white/20">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-cyan-600 to-purple-600 mx-auto flex items-center justify-center shadow-lg shadow-indigo-600/30 mb-4 ring-1 ring-white/20">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h2 className="text-xl font-black tracking-tight text-white">
             INTELLIGENT LEAVE PRIORITY SYSTEM
           </h2>
           <p className="text-xs text-slate-400 mt-1 font-medium">
-            Welcome Back — Institutional Portal Authentication
+            Institutional Role-Based Single Sign-On
           </p>
+        </div>
+
+        {/* Quick Demo User Dropdown Selector */}
+        <div className="mb-6 bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-indigo-400">
+            ⚡ Quick Demo Account Selector (Multiple Users)
+          </label>
+          <select
+            value={selectedDemoUser}
+            onChange={(e) => handleSelectDemoUser(e.target.value)}
+            className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-medium cursor-pointer"
+          >
+            <option value="">-- Choose Account to Quick Fill --</option>
+            <optgroup label="🎓 Students">
+              <option value="student@college.edu">Arun Kumar (student@college.edu)</option>
+              <option value="bhavana@college.edu">Bhavana S (bhavana@college.edu)</option>
+              <option value="chandran@college.edu">Chandran M (chandran@college.edu)</option>
+              <option value="divya@college.edu">Divya K (divya@college.edu)</option>
+              <option value="ezhil@college.edu">Ezhil R (ezhil@college.edu)</option>
+            </optgroup>
+            <optgroup label="👨‍🏫 Staff / Faculty">
+              <option value="staff@college.edu">Prof. K. Venkatesh (staff@college.edu)</option>
+              <option value="advisor.it@college.edu">Dr. M. Lakshmi (advisor.it@college.edu)</option>
+            </optgroup>
+            <optgroup label="🏛️ Vice Principal">
+              <option value="vp@college.edu">Dr. A. Parthiban - VP (vp@college.edu)</option>
+            </optgroup>
+            <optgroup label="👑 Administrator">
+              <option value="admin@college.edu">Dr. S. R. Ramanathan - Admin (admin@college.edu)</option>
+            </optgroup>
+          </select>
         </div>
 
         {/* Error Notification Pill */}
         {errorMsg && (
-          <div className="mb-6 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 animate-shake">
+          <div className="mb-6 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
             <span className="leading-snug">{errorMsg}</span>
           </div>
@@ -174,7 +201,7 @@ export default function LoginPage() {
           {/* Role Dropdown */}
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-              Select Portal Role
+              Select Portal Access Role
             </label>
             <select
               value={role}
@@ -182,11 +209,12 @@ export default function LoginPage() {
               className="w-full px-3.5 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition cursor-pointer font-medium"
             >
               <option value="STUDENT">🎓 Student Portal</option>
-              <option value="STAFF">👨‍🏫 Staff Portal (Advisor / HOD)</option>
+              <option value="STAFF">👨‍🏫 Staff / Class Advisor Portal</option>
+              <option value="VICE_PRINCIPAL">🏛️ Vice Principal / HOD Portal</option>
               <option value="ADMINISTRATOR">👑 Administrator Portal</option>
             </select>
             <p className="text-[10px] text-slate-400 mt-1">
-              Backend verifies that credentials strictly match the selected role.
+              Backend verifies that your account strictly matches the selected role.
             </p>
           </div>
 
@@ -194,65 +222,18 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-2 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full mt-2 py-3.5 bg-gradient-to-r from-indigo-600 via-cyan-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSubmitting ? (
               <span>Authenticating...</span>
             ) : (
               <>
-                <span>SIGN IN</span>
+                <span>SIGN IN TO PORTAL</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
         </form>
-
-        {/* Demo Credentials Quick Switcher */}
-        <div className="mt-8 pt-6 border-t border-slate-800/80">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 text-center">
-            Demo Credentials Quick Fill
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => fillDemo('STUDENT')}
-              className={`p-2 rounded-xl text-[11px] font-bold border transition text-center ${
-                role === 'STUDENT'
-                  ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
-                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              <GraduationCap className="w-3.5 h-3.5 mx-auto mb-1 text-indigo-400" />
-              Student
-            </button>
-
-            <button
-              type="button"
-              onClick={() => fillDemo('STAFF')}
-              className={`p-2 rounded-xl text-[11px] font-bold border transition text-center ${
-                role === 'STAFF'
-                  ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5 mx-auto mb-1 text-purple-400" />
-              Staff
-            </button>
-
-            <button
-              type="button"
-              onClick={() => fillDemo('ADMINISTRATOR')}
-              className={`p-2 rounded-xl text-[11px] font-bold border transition text-center ${
-                role === 'ADMINISTRATOR'
-                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              <Sliders className="w-3.5 h-3.5 mx-auto mb-1 text-rose-400" />
-              Admin
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Forgot Password Modal */}
@@ -270,14 +251,8 @@ export default function LoginPage() {
             </div>
             <h3 className="text-base font-bold text-white mb-1">Password Recovery</h3>
             <p className="text-xs text-slate-400 leading-relaxed mb-4">
-              Password resets are managed by the institution Administrator.
+              Use the demo account selector on the login card to test any of the 8 pre-seeded student, staff, VP, and admin accounts.
             </p>
-            <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1 mb-4 font-mono">
-              <p>Demo Password list:</p>
-              <p>• Student: <span className="text-indigo-400 font-bold">Student@123</span></p>
-              <p>• Staff: <span className="text-purple-400 font-bold">Staff@123</span></p>
-              <p>• Admin: <span className="text-rose-400 font-bold">Admin@123</span></p>
-            </div>
             <button
               onClick={() => setIsForgotOpen(false)}
               className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl"

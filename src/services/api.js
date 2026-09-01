@@ -1,10 +1,11 @@
 /**
- * Centralized API Service with JWT authentication header handling and seamless demo fallback
+ * Centralized API Service with JWT authentication header handling and multi-user demo fallback
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
-const DEMO_USERS = [
+export const DEMO_USERS = [
+  // STUDENTS
   {
     id: 'STU001',
     registerNo: '21CS094',
@@ -48,6 +49,71 @@ const DEMO_USERS = [
     }
   },
   {
+    id: 'STU003',
+    registerNo: '21CS045',
+    name: 'Chandran M',
+    email: 'chandran@college.edu',
+    password: 'Student@123',
+    role: 'STUDENT',
+    department: 'Computer Science & Engineering',
+    section: 'CSE-B',
+    year: 'III Year',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
+    status: 'ACTIVE',
+    profile: {
+      cgpa: 8.20,
+      currentAttendance: 84.5,
+      projectedAttendance: 81.2,
+      thresholdAttendance: 75.0,
+      githubUrl: 'https://github.com/suckow',
+      leetcodeUrl: ''
+    }
+  },
+  {
+    id: 'STU004',
+    registerNo: '21CS078',
+    name: 'Divya K',
+    email: 'divya@college.edu',
+    password: 'Student@123',
+    role: 'STUDENT',
+    department: 'Computer Science & Engineering',
+    section: 'CSE-B',
+    year: 'III Year',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
+    status: 'ACTIVE',
+    profile: {
+      cgpa: 8.10,
+      currentAttendance: 78.5,
+      projectedAttendance: 76.0,
+      thresholdAttendance: 75.0,
+      githubUrl: '',
+      leetcodeUrl: ''
+    }
+  },
+  {
+    id: 'STU005',
+    registerNo: '21CS150',
+    name: 'Ezhil R',
+    email: 'ezhil@college.edu',
+    password: 'Student@123',
+    role: 'STUDENT',
+    department: 'Computer Science & Engineering',
+    section: 'CSE-A',
+    year: 'III Year',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
+    status: 'ACTIVE',
+    profile: {
+      cgpa: 7.20,
+      currentAttendance: 74.8,
+      projectedAttendance: 71.5,
+      thresholdAttendance: 75.0,
+      githubUrl: '',
+      leetcodeUrl: ''
+    }
+  },
+
+  // STAFF / FACULTY / ADVISORS
+  {
     id: 'STF001',
     registerNo: 'EMP-CS01',
     name: 'Prof. K. Venkatesh',
@@ -55,11 +121,41 @@ const DEMO_USERS = [
     password: 'Staff@123',
     role: 'STAFF',
     department: 'Computer Science & Engineering',
-    section: 'Staff/Advisor',
+    section: 'Class Advisor',
     year: 'Faculty',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250',
     status: 'ACTIVE'
   },
+  {
+    id: 'STF002',
+    registerNo: 'EMP-IT01',
+    name: 'Dr. M. Lakshmi',
+    email: 'advisor.it@college.edu',
+    password: 'Staff@123',
+    role: 'STAFF',
+    department: 'Information Technology',
+    section: 'Class Advisor',
+    year: 'Faculty',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250',
+    status: 'ACTIVE'
+  },
+
+  // VICE PRINCIPAL / HOD
+  {
+    id: 'VP001',
+    registerNo: 'EMP-VP01',
+    name: 'Dr. A. Parthiban (Vice Principal)',
+    email: 'vp@college.edu',
+    password: 'Vp@123',
+    role: 'VICE_PRINCIPAL',
+    department: 'Computer Science & Engineering',
+    section: 'Vice Principal & HOD',
+    year: 'Executive',
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250',
+    status: 'ACTIVE'
+  },
+
+  // ADMINISTRATOR
   {
     id: 'ADM001',
     registerNo: 'ADM-001',
@@ -81,15 +177,6 @@ function getAuthHeaders() {
     'Content-Type': 'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {})
   };
-}
-
-async function handleResponse(res) {
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const errorMsg = data.message || `Request failed with status ${res.status}`;
-    throw new Error(errorMsg);
-  }
-  return data;
 }
 
 export const api = {
@@ -128,8 +215,13 @@ export const api = {
       throw new Error('Invalid credentials. Password incorrect.');
     }
 
+    // Handle role verification: VICE_PRINCIPAL can access STAFF or VICE_PRINCIPAL portal
     if (user.role !== targetRole) {
-      throw new Error(`Your account (${user.role}) does not have permission to access the ${targetRole} portal. Please select the correct role.`);
+      if (user.role === 'VICE_PRINCIPAL' && targetRole === 'STAFF') {
+        // Allowed
+      } else {
+        throw new Error(`Your account (${user.role}) does not have permission to access the ${targetRole} portal. Please select the correct role.`);
+      }
     }
 
     const { password: _, ...safeUser } = user;
@@ -332,12 +424,12 @@ export const api = {
       {
         id: 'AUD-1002',
         timestamp: new Date().toISOString(),
-        userId: 'STF001',
-        userName: 'Prof. K. Venkatesh',
-        role: 'STAFF',
+        userId: 'VP001',
+        userName: 'Dr. A. Parthiban (Vice Principal)',
+        role: 'VICE_PRINCIPAL',
         action: 'LEAVE_APPROVED',
-        target: 'LVR-2026-00126',
-        details: 'Approved family emergency leave for Chandran M'
+        target: 'LVR-2026-00125',
+        details: 'Final approval granted for placement leave at Google'
       }
     ];
   },

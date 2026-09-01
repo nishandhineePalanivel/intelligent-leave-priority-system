@@ -22,13 +22,11 @@ import {
   ListFilter, 
   ShieldCheck, 
   BarChart2, 
-  FileCheck2, 
   FileSpreadsheet, 
-  Lock, 
   Building2, 
   UserCheck, 
   Sliders,
-  ChevronDown
+  Award
 } from 'lucide-react';
 import FairnessPolicyModal from '../components/FairnessPolicyModal';
 
@@ -50,7 +48,6 @@ export default function PortalLayout() {
     navigate('/login');
   };
 
-  // Define sidebar navigation items for each role
   const getNavItems = () => {
     if (role === 'STUDENT') {
       return [
@@ -66,14 +63,14 @@ export default function PortalLayout() {
         { label: 'Notifications', path: '/student/notifications', icon: Bell, badge: unreadNotifsCount },
         { label: 'Settings', path: '/student/settings', icon: Settings },
       ];
-    } else if (role === 'STAFF') {
+    } else if (role === 'STAFF' || role === 'VICE_PRINCIPAL') {
       return [
         { label: 'Dashboard', path: '/staff/dashboard', icon: LayoutDashboard },
         { label: 'Leave Requests', path: '/staff/requests', icon: FileText },
         { label: 'Priority Queue', path: '/staff/queue', icon: ListFilter },
         { label: 'Student Directory', path: '/staff/students', icon: Users },
         { label: 'Student Profiles', path: '/staff/profiles', icon: GraduationCap },
-        { label: 'Attendance', path: '/staff/attendance', icon: CheckSquare },
+        { label: 'Attendance Protection', path: '/staff/attendance', icon: CheckSquare },
         { label: 'Notifications', path: '/staff/notifications', icon: Bell, badge: unreadNotifsCount },
         { label: 'Settings', path: '/staff/settings', icon: Settings },
       ];
@@ -84,7 +81,7 @@ export default function PortalLayout() {
         { label: 'All Leave Requests', path: '/admin/requests', icon: FileText },
         { label: 'Priority Queue', path: '/admin/queue', icon: ListFilter },
         { label: 'Students', path: '/admin/students', icon: GraduationCap },
-        { label: 'Staff', path: '/admin/staff', icon: UserCheck },
+        { label: 'Staff & Faculty', path: '/admin/staff', icon: UserCheck },
         { label: 'Departments', path: '/admin/departments', icon: Building2 },
         { label: 'Analytics', path: '/admin/analytics', icon: BarChart2 },
         { label: 'Reports', path: '/admin/reports', icon: FileSpreadsheet },
@@ -97,8 +94,9 @@ export default function PortalLayout() {
   const navItems = getNavItems();
 
   const getRoleBadgeStyle = () => {
-    if (role === 'STUDENT') return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30';
+    if (role === 'STUDENT') return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
     if (role === 'STAFF') return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+    if (role === 'VICE_PRINCIPAL') return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
     return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
   };
 
@@ -111,7 +109,7 @@ export default function PortalLayout() {
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
-          <span className="font-extrabold text-sm tracking-tight text-white">LEAVE PRIORITY</span>
+          <span className="font-extrabold text-sm tracking-tight text-white">LEAVE PRIORITY ERP</span>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -131,13 +129,13 @@ export default function PortalLayout() {
 
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800/80 flex flex-col justify-between transition-transform duration-300
+        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div>
           {/* Sidebar Header Branding */}
           <div className="p-5 border-b border-slate-800 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-rose-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 ring-1 ring-white/20 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-cyan-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 ring-1 ring-white/20 shrink-0">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -145,13 +143,13 @@ export default function PortalLayout() {
                 LEAVE PRIORITY ERP
               </h1>
               <span className={`inline-block px-2 py-0.5 mt-1 text-[9px] font-extrabold uppercase tracking-widest border rounded-full ${getRoleBadgeStyle()}`}>
-                {role} PORTAL
+                {role.replace('_', ' ')} PORTAL
               </span>
             </div>
           </div>
 
           {/* User Profile Card */}
-          <div className="p-4 mx-3 my-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center gap-3">
+          <div className="p-4 mx-3 my-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center gap-3">
             <img
               src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'}
               alt={user?.name}
@@ -176,7 +174,7 @@ export default function PortalLayout() {
                   className={`
                     flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition
                     ${isActive
-                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 font-bold'
+                      ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-lg shadow-indigo-600/30 font-bold'
                       : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                     }
                   `}
@@ -203,7 +201,7 @@ export default function PortalLayout() {
             className="w-full px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-indigo-300 hover:bg-slate-800 flex items-center gap-2 transition"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>AI Fairness Rules</span>
+            <span>AI Fairness Guarantee</span>
           </button>
 
           <button
@@ -211,31 +209,27 @@ export default function PortalLayout() {
             className="w-full px-3 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 flex items-center gap-2 transition"
           >
             <LogOut className="w-4 h-4" />
-            <span>Logout Account</span>
+            <span>Logout ({user?.name ? user.name.split(' ')[0] : 'Account'})</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Right Section */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Navigation Bar */}
-        <header className="hidden lg:flex sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-8 py-3.5 items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="text-slate-300 font-semibold uppercase">{role} Portal</span>
+        <header className="hidden lg:flex sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-8 py-3.5 items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+            <span className="text-indigo-400 font-bold uppercase">{role.replace('_', ' ')} PORTAL</span>
             <span>/</span>
-            <span className="text-white font-bold capitalize">
-              {location.pathname.split('/')[2] || 'Dashboard'}
-            </span>
+            <span className="text-white font-bold capitalize">{location.pathname.split('/')[2] || 'Dashboard'}</span>
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Quick Fairness trigger */}
             <button
               onClick={() => setIsFairnessOpen(true)}
               className="text-xs text-slate-400 hover:text-indigo-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-indigo-500/30 transition"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Non-Punitive AI Guarantee</span>
+              <span>Non-Punitive AI Policy</span>
             </button>
 
             {/* Notification Bell Dropdown */}
@@ -274,7 +268,7 @@ export default function PortalLayout() {
           </div>
         </header>
 
-        {/* Dynamic Nested Page Content */}
+        {/* Dynamic Outlet */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
